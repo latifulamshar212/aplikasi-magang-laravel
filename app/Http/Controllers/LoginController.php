@@ -17,39 +17,39 @@ class LoginController extends Controller
     public function authenticate(Request $request)
     {
         $request->validate([
-            'login'    => 'required|string', // Input fleksibel
+            'login'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Cek apakah input berupa Email atau Nomor Induk (NIM/NIP)
-        // Kita memanfaatkan fungsi bawaan PHP untuk validasi email
         $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nomor_induk';
 
-        // Persiapkan kredensial
         $credentials = [
             $loginType => $request->login,
             'password' => $request->password,
         ];
 
+        // --- CUKUP SATU KALI PENGECEKAN DI SINI ---
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            // Cek Role User
-            $user = Auth::user();
+            $role = Auth::user()->role;
 
-            if ($user->role === 'dosen') {
-                // Jika Dosen, arahkan ke dashboard dosen (Nanti kita buat)
+            // 1. Cek Admin
+            if ($role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } 
+            // 2. Cek Dosen
+            elseif ($role === 'dosen') {
                 return redirect()->intended('/dosen/dashboard');
             }
 
-            // Jika Mahasiswa, arahkan ke dashboard mahasiswa (Absensi)
+            // 3. Default: Mahasiswa
             return redirect()->intended('/dashboard');
         }
+        // ------------------------------------------
 
         return back()->withErrors([
             'login' => 'NIM/NIP, Email, atau Password salah.',
         ])->onlyInput('login');
     }
-    
-    // Logika Logout sudah ada di routes/web.php
 }

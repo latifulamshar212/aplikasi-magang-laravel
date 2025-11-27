@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('name');
             // 'nomor_induk' akan diisi NIM (mhs) atau NIP (dosen)
             $table->string('nomor_induk')->unique();
-            $table->enum('role', ['dosen', 'mahasiswa']);
+
+            // Tambahkan 'admin' ke dalam array enum role
+            $table->enum('role', ['dosen', 'mahasiswa', 'admin']);
+
+            
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

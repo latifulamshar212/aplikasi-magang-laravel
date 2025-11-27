@@ -12,6 +12,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+
+        // 0. Buat Akun ADMIN
+        User::create([
+            'name' => 'Super Admin',
+            'nomor_induk' => 'admin', // Username login admin
+            'email' => 'admin@kampus.ac.id',
+            'role' => 'admin',
+            'password' => Hash::make('password'),
+        ]);
         // ============================
         // 1. Buat Akun DOSEN (Pak Budi)
         // ============================
