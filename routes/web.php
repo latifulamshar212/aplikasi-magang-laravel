@@ -6,15 +6,20 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogbookController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\IsDosen;
 
-// 1. GROUP TAMU (Belum Login)
-Route::middleware('guest')->group(function () {
-    // Halaman Utama langsung ke Login
-    Route::get('/', [LoginController::class, 'showLoginForm'])->name('login'); 
-    Route::get('/login', [LoginController::class, 'showLoginForm']); 
+// 1. HALAMAN DEPAN (LANDING PAGE) - Bisa diakses siapa saja
+Route::get('/', function () {
+    return view('landing');
+})->name('home');
 
+// 2. GROUP TAMU (Belum Login)
+Route::middleware('guest')->group(function () {
+    // Halaman Login (Sekarang di /login, bukan di / lagi)
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); 
+    
     // Proses Login
     Route::post('/login', [LoginController::class, 'authenticate']);
 });
@@ -35,6 +40,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Route Cetak Laporan
     Route::get('/report/print', [ReportController::class, 'print'])->name('report.print');
+
+    // Fitur Edit Profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     
 
